@@ -60,6 +60,9 @@ class Message {
 	/** @var string */
 	protected $actorType = '';
 
+	/** @var int */
+    protected $ttl;
+
 	/** @var string */
 	protected $actorId = '';
 
@@ -74,6 +77,7 @@ class Message {
 		$this->participant = $participant;
 		$this->comment = $comment;
 		$this->l = $l;
+		$this->ttl = $this->getRoom()->getMessagesTTL();
 	}
 
 	/*
@@ -99,6 +103,9 @@ class Message {
 	/*
 	 * Parsed message information
 	 */
+    public function getTTL(): int {
+        return $this->ttl;
+    }
 
 	public function setVisibility(bool $visible): void {
 		$this->visible = $visible;
@@ -175,6 +182,7 @@ class Message {
 			'messageType' => $this->getMessageType(),
 			'isReplyable' => $this->isReplyable(),
 			'referenceId' => (string) $this->getComment()->getReferenceId(),
+            'ttl' => $this->getTTL(),
 		];
 	}
 }
