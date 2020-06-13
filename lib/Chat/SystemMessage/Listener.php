@@ -152,6 +152,18 @@ class Listener {
 				$listener->sendSystemMessage($room, 'read_only_off');
 			}
 		});
+        $dispatcher->addListener(Room::EVENT_AFTER_MESSAGETTL_SET, static function (ModifyRoomEvent $event) {
+            $room = $event->getRoom();
+
+            if ($event->getNewValue() === $event->getOldValue()) {
+                return;
+            }
+
+            /** @var self $listener */
+            $listener = \OC::$server->query(self::class);
+
+            $listener->sendSystemMessage($room, 'messages_ttl_updated');
+        });
 		$dispatcher->addListener(Room::EVENT_AFTER_LOBBY_STATE_SET, static function (ModifyLobbyEvent $event) {
 			if ($event->getNewValue() === $event->getOldValue()) {
 				return;
