@@ -149,6 +149,8 @@ class Room {
 	private $objectType;
 	/** @var string */
 	private $objectId;
+    /** @var int */
+    private $messagesTTL;
 
 	/** @var string */
 	protected $currentUser;
@@ -176,7 +178,8 @@ class Room {
 								IComment $lastMessage = null,
 								\DateTime $lobbyTimer = null,
 								string $objectType = '',
-								string $objectId = '') {
+								string $objectId = '',
+                                int $messagesTTL = 0) {
 		$this->manager = $manager;
 		$this->db = $db;
 		$this->secureRandom = $secureRandom;
@@ -199,6 +202,7 @@ class Room {
 		$this->lobbyTimer = $lobbyTimer;
 		$this->objectType = $objectType;
 		$this->objectId = $objectId;
+		$this->messagesTTL = $messagesTTL;
 	}
 
 	public function getId(): int {
@@ -288,6 +292,18 @@ class Room {
 		$this->currentUser = $userId;
 		$this->participant = $participant;
 	}
+
+    public function getMessagesTTL(): int {
+        return $this->messagesTTL;
+    }
+
+    public function setMessagesTTL(int $ttlSecs): void {
+        if ($ttlSecs < 0) {
+            $ttlSecs = 0;
+        }
+
+        $this->messagesTTL = $ttlSecs;
+    }
 
 	/**
 	 * Return the room properties to send to the signaling server.
