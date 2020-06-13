@@ -153,6 +153,14 @@ trait TRoomCommand {
 		}
 	}
 
+    /**
+     * @param Room $room
+     * @param int  $messagesTTLSecs
+     */
+    protected function setMessagesTTL(Room $room, int $messagesTTLSecs): void {
+        $room->setMessagesTTL($messagesTTLSecs);
+    }
+
 	/**
 	 * @param Room   $room
 	 * @param string $userId
