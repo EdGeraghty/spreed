@@ -71,6 +71,11 @@ class Update extends Base {
 				null,
 				InputOption::VALUE_REQUIRED,
 				'Sets the given user as owner of the room; pass an empty value to remove the owner'
+			)->addOption(
+			    'messagesttl',
+                0,
+                InputOption::VALUE_REQUIRED,
+                'Set the Message Time To Live for the Room, in seconds; pass an empty value (or 0) to stop messages expiring.'
 			);
 	}
 
@@ -81,6 +86,7 @@ class Update extends Base {
 		$readOnly = $input->getOption('readonly');
 		$password = $input->getOption('password');
 		$owner = $input->getOption('owner');
+		$ttl = $input->getOption('messagesttl');
 
 		if (!in_array($public, [null, '0', '1'], true)) {
 			$output->writeln('<error>Invalid value for option "--public" given.</error>');
@@ -98,6 +104,13 @@ class Update extends Base {
 			$output->writeln('<error>Room not found.</error>');
 			return 1;
 		}
+
+        if ($ttl !== null) {
+            if (!is_int($ttl) || $ttl < 0) {
+                $output->writeln('<error>Invalid value for option "--messagesttl" given.</error>');
+                return 1;
+            }
+        }
 
 		if (!in_array($room->getType(), [Room::GROUP_CALL, Room::PUBLIC_CALL], true)) {
 			$output->writeln('<error>Room is no group call.</error>');
@@ -128,6 +141,14 @@ class Update extends Base {
 					$this->unsetRoomOwner($room);
 				}
 			}
+
+			if ($ttl !== null) {
+			    if ($ttl !== '') {
+			        $this->setRoomMessagesTTL($room, $ttl);
+                } else {
+			        $this->setRoomMessagesTTL($room, 0);
+                }
+            }
 		} catch (InvalidArgumentException $e) {
 			$output->writeln(sprintf('<error>%s</error>', $e->getMessage()));
 			return 1;
