@@ -79,6 +79,11 @@ class Create extends Base {
 				null,
 				InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
 				'Promotes the given users to moderators'
+            )->addOption(
+                'messagesttl',
+                null,
+                InputOption::VALUE_NONE,
+                'Messages will self-destruct this many seconds after being read, if set'
 			);
 	}
 
@@ -91,6 +96,7 @@ class Create extends Base {
 		$password = $input->getOption('password');
 		$owner = $input->getOption('owner');
 		$moderators = $input->getOption('moderator');
+		$ttl = $input->getOption('messagesttl');
 
 		$name = trim($name);
 		if (!$this->validateRoomName($name)) {
@@ -114,6 +120,10 @@ class Create extends Base {
 			if ($owner !== null) {
 				$this->setRoomOwner($room, $owner);
 			}
+
+            if ($ttl !== null) {
+                $this->setMessagesTTL($ttl);
+            }
 		} catch (InvalidArgumentException $e) {
 			$room->deleteRoom();
 
